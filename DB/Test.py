@@ -2,6 +2,8 @@ import  os,bs4,requests
 import lxml
 from DB import SqliteDBHelper
 
+# -*- coding: utf-8 -*-
+
 from DBHelper import DBHelper
 from Model.DouBanMoiveInfo import DouBanMoiveInfo
 
@@ -60,8 +62,9 @@ while(httpcode==200):
         break;
     startindex = startindex + 10;
     for sql in sqlList:
-        result=DBHelper.Exsql(DBHelper,sql);
-        print(result)
+        print(sql)
+        result = SqliteDBHelper.SqliteDBHelper.ExSql(SqliteDBHelper, sql);
+        print(result.rowcount)
 print("OK 10 items")
 for info in infoList:
     print(info.imgUrl)
