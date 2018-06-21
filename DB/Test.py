@@ -11,8 +11,8 @@ from Model.DouBanMoiveInfo import DouBanMoiveInfo
 
 # 根据协议类型，选择不同的代理
 proxies = {
-  "https": "122.72.18.35:80",
-  "https": "101.132.122.230:3128",
+  "http": "111.155.116.223:8123",
+  "http": "112.115.57.20:3128",
 }
 
 
@@ -23,15 +23,15 @@ httpcode=200;
 startindex=10
 while(httpcode==200):
 
-    # try:
-    #     requests.get('https://movie.douban.com/review/best/?start=10', proxies=proxies)
-    # except:
-    #     print('connect failed')
-    #     break;
-    # else:
-    #     print( 'success')
+    try:
+        requests.get('https://movie.douban.com/review/best/?start=10', proxies=proxies)
+    except:
+        print('connect failed')
+        break;
+    else:
+        print( 'success')
 
-    res=requests.get(url)
+    res=requests.get(url, proxies=proxies)
     html=res.text;
     soup=bs4.BeautifulSoup(html,'lxml')
     divlist=soup.select('div[class="review-list chart "] div[class="main review-item"]')
@@ -41,8 +41,16 @@ while(httpcode==200):
     infoList=[];
     for divstr in divlist:
         img=divstr.select('img[rel="v:image"]');
+        span=divstr.select('span[property="v:rating"]');
         if(img!=[]):
                 img=img[0]
+                title='',
+                star=''
+                if(span!=[]):
+                    span=span[0]
+                    title=span.get('title');                       # 获得综合评价
+                    star=span.get('class')[0].split('allstar')[1]  # 获得星级
+                    print(title,star)
                 if(img.get("title")!=""and img.get("src")!=""):
                      info= DouBanMoiveInfo(0,img.get("title"),img.get('src'))  # 留待入库
                      res=requests.get(info.imgUrl)
@@ -52,13 +60,12 @@ while(httpcode==200):
                      for imgs in res.iter_content(1000):
                          imgpath.write(imgs);
                      imgpath.close()
-                     sql="INSERT INTO `douban` (`moiveName`, `imgurl`) VALUES ('"+info.moiveName+"','"+info.imgUrl+"');"
+                     sql="INSERT INTO `douban` (`moiveName`, `imgurl`,`title`, `star`) VALUES ('"+info.moiveName+"','"+info.imgUrl+"','"+title+"','"+star+"');"
                      sqlList.append(sql);
                      infoList.append(info)
 
     url="https://movie.douban.com/review/best/?start="+str(startindex)
-    print(url)
-    if(startindex>10):
+    if(startindex>500):
         break;
     startindex = startindex + 10;
     for sql in sqlList:
