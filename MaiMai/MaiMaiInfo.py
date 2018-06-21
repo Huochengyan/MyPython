@@ -11,7 +11,7 @@ def login():
     session=requests.session()
     login_data={
         'm':'13718562199',
-        'p':'929914120.huo',
+        'p':'929914120',
         'to':'https://maimai.cn/im/',
         'pa':'+86'
     }
