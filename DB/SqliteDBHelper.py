@@ -9,4 +9,5 @@ class SqliteDBHelper:
         result=c.execute(sql)
         conn.commit()
         conn.close()
+        c.close();
         return result;

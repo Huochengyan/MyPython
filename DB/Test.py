@@ -67,6 +67,7 @@ while(httpcode==200):
     url="https://movie.douban.com/review/best/?start="+str(startindex)
     if(startindex>500):
         break;
+
     startindex = startindex + 10;
     for sql in sqlList:
         print(sql)
